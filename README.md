@@ -98,4 +98,14 @@ function App(): JSX.Element {
 
 export default App;
 ```
-# react-native-image-picker-next
+
+## Troubleshooting 🛠
+
+If your app crashes when trying to open the camera on iOS, ensure that you have the necessary permission in your `Info.plist` file:
+
+```xml
+<key>NSCameraUsageDescription</key>
+<string>Allow $(PRODUCT_NAME) to access your camera</string>
+```
+
+Note that you do not need to add the `NSPhotoLibraryUsageDescription` key to work, as it does not access the photo library directly and uses the native iOS image picker.
