@@ -1,0 +1,12 @@
+Derived
+target
+build
+.DS_Store
+volumes
+*.zip
+*.tgz
+*.ipa
+*.pb
+node_modules
+*.xcframework
+*.so

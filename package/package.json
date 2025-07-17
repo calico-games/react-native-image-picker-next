@@ -1,0 +1,55 @@
+{
+  "name": "react-native-image-picker-next",
+  "version": "0.0.1",
+  "description": "Image Picker for React Native.",
+  "main": "src/index.js",
+  "files": [
+    "src",
+    "android",
+    "ios",
+    "ImagePicker.podspec",
+    "LICENSE"
+  ],
+  "scripts": {
+    "lint": "eslint \"**/*.{js,ts,tsx}\""
+  },
+  "keywords": [
+    "react-native",
+    "ios",
+    "android",
+    "image-picker",
+    "camera",
+    "gallery",
+    "photo",
+    "media"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/calico-games/react-native-image-picker-next.git"
+  },
+  "author": "Calico Games <seb@calico.games> (https://github.com/calico-games)",
+  "license": "MIT",
+  "homepage": "https://github.com/calico-games/react-native-image-picker-next",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "peerDependencies": {
+    "react-native": "*"
+  },
+   "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false
+  },
+  "bugs": {
+    "url": "https://github.com/calico/react-native-image-picker-next/issues"
+  },
+  "dependencies": {}
+}

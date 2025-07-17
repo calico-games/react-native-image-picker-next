@@ -1,0 +1,13 @@
+{
+  "migIndex": 1,
+  "data": [
+    {
+      "path": "src/assets/cube.pck",
+      "sha1": "e55b073942e0cb05956c49b976eee6716c833d41"
+    },
+    {
+      "path": "src/assets/earth.pck",
+      "sha1": "49cc7c2f10c2413a8c1d45199bc4904f4fdc783e"
+    }
+  ]
+}

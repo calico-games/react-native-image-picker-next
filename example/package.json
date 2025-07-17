@@ -1,0 +1,45 @@
+{
+  "name": "example",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "android": "react-native run-android",
+    "ios": "react-native run-ios",
+    "lint": "eslint .",
+    "prettier": "npx prettier src --write --ignore-path .prettierignore",
+    "ios-clean": "cd ios && rm -rf Pods && rm -rf build/ && cd ..",
+    "android-clean": "cd android && ./gradlew clean && ./gradlew generateCodegenArtifactsFromSchema --rerun-tasks && ./gradlew bundleProdRelease && cd ..",
+    "clean": "yarn ios-clean && yarn android-clean",
+    "reset": "yarn clean && yarn pod-install && yarn android-asset && yarn ios-asset",
+    "start": "npx @react-native-community/cli start --client-logs",
+    "asset": "npx react-native-asset",
+    "pod-install": "cd ios && bundle exec pod install"
+  },
+  "dependencies": {
+    "babel-plugin-module-resolver": "^5.0.2",
+    "react": "19.0.0",
+    "react-native": "0.78.3",
+    "react-native-image-picker-next": "link:../package/"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.25.2",
+    "@babel/preset-env": "7.25.3",
+    "@babel/runtime": "7.25.0",
+    "@react-native-community/cli": "15.0.1",
+    "@react-native-community/cli-platform-android": "15.0.1",
+    "@react-native-community/cli-platform-ios": "15.0.1",
+    "@react-native/babel-preset": "0.78.3",
+    "@react-native/eslint-config": "0.78.3",
+    "@react-native/metro-config": "0.78.3",
+    "@react-native/typescript-config": "0.78.3",
+    "@types/react": "^19.0.0",
+    "babel-plugin-transform-remove-console": "^6.9.4",
+    "eslint": "^8.19.0",
+    "glob-to-regexp": "^0.4.1",
+    "prettier": "^3.5.0",
+    "typescript": "5.0.4"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
