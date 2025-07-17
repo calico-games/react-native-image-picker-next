@@ -101,16 +101,16 @@ export default App;
 
 ### Options
 
-| Property | Type | Description |
-| -------- | :---: | :---------- |
-| isCropping | bool (default false) | Enable or disable cropping |
-| width | number (default 200) | Width of result image when used with `isCropping` option |
-| height | number (default 200) | Height of result image when used with `isCropping` option |
-| compressionQuality | number (default 0.5) | Compress image with quality (from 0 to 1, where 1 is best quality). |
-| useWebP | bool (default true) | Whether to use WebP format for the image. |
-| shouldResize | bool (default true) | Whether to resize the image to the specified width
-| useFrontCamera | bool (default false) | Whether to default to the front/'selfie' camera when opened. Please note that not all Android devices handle this parameter |
-| isTemp | bool (default false) | Whether to save the image in a temporary directory. If true, the image will be saved in the temporary directory, otherwise it will be saved in the document directory. |
+| Property | Type | Default | Description |
+| -------- | :---: | :---: | :---------- |
+| isCropping | bool | false | Enable or disable cropping |
+| width | number | 200 | Width of result image when used with `isCropping` option |
+| height | number | 200 | Height of result image when used with `isCropping` option |
+| compressionQuality | number | 0.5 | Compress image with quality (from 0 to 1, where 1 is best quality). |
+| useWebP | bool | true | Whether to use WebP format for the image. |
+| shouldResize | bool | true | Whether to resize the image to the specified width
+| useFrontCamera | bool | false | Whether to default to the front/'selfie' camera when opened. Please note that not all Android devices handle this parameter |
+| isTemp | bool | false | Whether to save the image in a temporary directory. If true, the image will be saved in the temporary directory, otherwise it will be saved in the document directory. |
 
 ## Troubleshooting 🛠
 
