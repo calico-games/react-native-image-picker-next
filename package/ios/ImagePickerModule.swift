@@ -15,7 +15,9 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
             "height": Constants.defaultSize,
             "compressionQuality": Constants.defaultCompressionQuality,
             "useWebP": true,
-            "shouldResize": true
+            "shouldResize": true,
+            "useFrontCamera": false,
+            "isTemp": false
         ]
     }
 
@@ -35,6 +37,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
     func openImagePicker(_ sourceType: UIImagePickerController.SourceType, resolve: @escaping RCTPromiseResolveBlock, reject: @escaping RCTPromiseRejectBlock) {
         DispatchQueue.main.async {
             let isCropping = self.options["isCropping"] as? Bool == true
+            let useFrontCamera = self.options["useFrontCamera"] as? Bool == true
 
             let imagePicker = UIImagePickerController()
             imagePicker.sourceType = sourceType
@@ -46,7 +49,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
 
             if sourceType == .camera {
                 imagePicker.cameraCaptureMode = .photo
-                imagePicker.cameraDevice = .front
+                imagePicker.cameraDevice = useFrontCamera ? .front : .rear
             }
 
             if let viewController = RCTPresentedViewController() {
@@ -76,6 +79,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
         let compressionQuality = options["compressionQuality"] as? Float ?? Constants.defaultCompressionQuality
         let useWebP = options["useWebP"] as? Bool == true
         let shouldResize = options["shouldResize"] as? Bool == true
+        let isTemp = options["isTemp"] as? Bool == true
 
         if shouldResize {
             image = image.resizedImageToSize(dstSize: .init(width: width, height: height)) ?? image
@@ -89,7 +93,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
             imageData = image.jpegData(compressionQuality: CGFloat(compressionQuality))!
         }
 
-        let temporaryDirectory = FileManager.default.temporaryDirectory
+        let directory = isTemp ? FileManager.default.temporaryDirectory : FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let randomID = UUID().uuidString
         let imageFileName = "image-" + randomID
         let imageExtension = useWebP ? ".webp" : ".jpg"

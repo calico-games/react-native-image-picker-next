@@ -12,6 +12,8 @@ function App(): JSX.Element {
     compressionQuality: 0.8,
     useWebP: true,
     shouldResize: true,
+    useFrontCamera: true,
+    isTemp: false,
   };
 
   const openPicker = async () => {

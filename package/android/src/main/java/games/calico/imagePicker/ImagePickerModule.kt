@@ -46,6 +46,8 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
         options.putDouble("compressionQuality", DEFAULT_COMPRESSION_QUALITY)
         options.putBoolean("useWebP", true)
         options.putBoolean("shouldResize", true)
+        options.putBoolean("useFrontCamera", true)
+        options.putBoolean("isTemp", true)
         options
     }
   }
@@ -65,6 +67,8 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   private var compressionQuality: Double = DEFAULT_COMPRESSION_QUALITY
   private var useWebP: Boolean = true
   private var shouldResize: Boolean = true
+  private var useFrontCamera: Boolean = true
+  private var isTemp: Boolean = true
 
   private var currentPhotoPath: String? = null
   private var imagePickerPromise: Promise? = null
@@ -149,11 +153,18 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
         )
 
       intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri)
-      activity.startActivityForResult(intent, CAMERA_CAPTURE_REQUEST)
 
-      intent.putExtra("android.intent.extras.CAMERA_FACING", 1)
-      intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
-      intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
+      if (useFrontCamera) {
+        intent.putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
+        intent.putExtra("android.intent.extras.CAMERA_FACING", 1)
+        intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
+      } else {
+        intent.putExtra("android.intent.extras.LENS_FACING_BACK", 1)
+        intent.putExtra("android.intent.extras.CAMERA_FACING", 0)
+        intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", false)
+      }
+
+      activity.startActivityForResult(intent, CAMERA_CAPTURE_REQUEST)
 
       if (intent.resolveActivity(activity.packageManager) == null) {
         imagePickerPromise?.reject("CAMERA_INTENT_ERROR", "Failed to create camera intent")
@@ -180,7 +191,13 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
 
     val extension = if (useWebP) ".webp" else ".jpg"
 
-    val image = File.createTempFile(imageFileName, extension, path)
+    val image = if (isTemp) {
+      File.createTempFile(imageFileName, extension, path)
+    } else {
+      File(path, "$imageFileName$extension").apply {
+        createNewFile()
+      }
+    }
 
     currentPhotoPath = image.absolutePath
     
@@ -456,6 +473,8 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
     compressionQuality = getDoubleOption(options, "compressionQuality")
     useWebP = getBooleanOption(options, "useWebP")
     shouldResize = getBooleanOption(options, "shouldResize")
+    useFrontCamera = getBooleanOption(options, "useFrontCamera")
+    isTemp = getBooleanOption(options, "isTemp")
     this.options = options
   }
 

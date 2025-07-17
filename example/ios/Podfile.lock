@@ -1775,7 +1775,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   hermes-engine: b5c9cfbe6415f1b0b24759f2942c8f33e9af6347
-  ImagePicker: ccd178d43d37aacc2e0ad9f1f96084bb704cba4b
+  ImagePicker: cb1fa6bd2279bac90596bce9cf3a36ce30039940
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
   RCTDeprecation: cf39863b43871c2031050605fb884019b6193910
