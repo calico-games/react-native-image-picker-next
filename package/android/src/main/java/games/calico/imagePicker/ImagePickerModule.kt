@@ -166,10 +166,11 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   @Throws(IOException::class)
   private fun createImageFile(): File {
     val imageFileName = "image-${UUID.randomUUID()}"
+    val appName = reactApplicationContext.applicationInfo.loadLabel(reactApplicationContext.packageManager).toString()
     val path = File(
       Environment.getExternalStoragePublicDirectory(
         Environment.DIRECTORY_PICTURES
-      ), "ImagePickerModule"
+      ), appName
     )
     path.run {
       if (!exists()) {
