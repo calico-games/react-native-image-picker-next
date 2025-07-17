@@ -111,7 +111,7 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
       val chooserIntent = Intent.createChooser(intent, "Pick an image")
       activity.startActivityForResult(chooserIntent, IMAGE_PICKER_REQUEST)
     } catch (e: Exception) {
-      imagePickerPromise?.reject("IMAGE_PICKER_ERROR", "Failed to show image picker")
+      imagePickerPromise?.reject("IMAGE_PICKER_ERROR", "Failed to show image picker: ${e.message}")
     }
   }
 
@@ -143,7 +143,8 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   private fun initiateCamera(activity: Activity) {
     try {
       val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-      val photoFile = createImageFile()
+      // Create a file to save the image that should not be temporary when using the camera
+      val photoFile = createImageFile(false)
 
       val photoUri =
         FileProvider.getUriForFile(
@@ -170,12 +171,12 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
         imagePickerPromise?.reject("CAMERA_INTENT_ERROR", "Failed to create camera intent")
       }
     } catch (e: Exception) {
-      imagePickerPromise?.reject("IMAGE_FILE_ERROR", "Failed to create image file")
+      imagePickerPromise?.reject("IMAGE_FILE_ERROR", "Failed to create image file: ${e.message}")
     }
   }
 
   @Throws(IOException::class)
-  private fun createImageFile(): File {
+  private fun createImageFile(createTempFile: Boolean = true): File {
     val imageFileName = "image-${UUID.randomUUID()}"
     val appName = reactApplicationContext.applicationInfo.loadLabel(reactApplicationContext.packageManager).toString()
     val path = File(
@@ -191,8 +192,8 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
 
     val extension = if (useWebP) ".webp" else ".jpg"
 
-    val image = if (isTemp) {
-      File.createTempFile(imageFileName, extension, path)
+    val image = if (createTempFile) {
+      File.createTempFile(imageFileName, extension)
     } else {
       File(path, "$imageFileName$extension").apply {
         createNewFile()
@@ -450,7 +451,7 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   }
 
   private fun compressImage(bitmap: Bitmap, useWebP: Boolean): Uri {
-    val outputFile = createImageFile()
+    val outputFile = createImageFile(isTemp)
     val outputStream = FileOutputStream(outputFile)
     val quality = (compressionQuality * 100).toInt()
 

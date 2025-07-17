@@ -13,7 +13,7 @@ function App(): JSX.Element {
     useWebP: true,
     shouldResize: true,
     useFrontCamera: true,
-    isTemp: false,
+    isTemp: true,
   };
 
   const openPicker = async () => {

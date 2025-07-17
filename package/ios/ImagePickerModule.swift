@@ -97,7 +97,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
         let randomID = UUID().uuidString
         let imageFileName = "image-" + randomID
         let imageExtension = useWebP ? ".webp" : ".jpg"
-        let fileURL = temporaryDirectory.appendingPathComponent(imageFileName + imageExtension)
+        let fileURL = directory.appendingPathComponent(imageFileName + imageExtension)
 
         do {
             try imageData.write(to: fileURL)

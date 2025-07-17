@@ -48,6 +48,8 @@ function App(): JSX.Element {
     compressionQuality: 0.8,
     useWebP: true,
     shouldResize: true,
+    useFrontCamera: true,
+    isTemp: true,
   };
 
   const openPicker = async () => {
@@ -108,8 +110,8 @@ export default App;
 | height | number | 200 | Height of result image when used with `isCropping` option |
 | compressionQuality | number | 0.5 | Compress image with quality (from 0 to 1, where 1 is best quality). |
 | useWebP | bool | true | Whether to use WebP format for the image. |
-| shouldResize | bool | true | Whether to resize the image to the specified width
-| useFrontCamera | bool | false | Whether to default to the front/'selfie' camera when opened. Please note that not all Android devices handle this parameter |
+| shouldResize | bool | true | Whether to resize the image to the specified height and width. |
+| useFrontCamera | bool | true | Whether to default to the front camera when opened. Please note that not all Android devices handle this parameter |
 | isTemp | bool | false | Whether to save the image in a temporary directory. If true, the image will be saved in the temporary directory, otherwise it will be saved in the document directory. |
 
 ## Troubleshooting 🛠
