@@ -19,6 +19,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
             "shouldResize": true,
             "useFrontCamera": false,
             "useNativeCropper": false,
+            "isCropCircular": true,
             "isTemp": false
         ]
     }
@@ -165,29 +166,26 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
     private func handleImage(from selectedImage: PHPickerResult) async throws -> UIImage {
         let itemProvider = selectedImage.itemProvider
 
-        // Fast-path: copy original file when no processing is required and current representation is requested.
-        if true {
-          // Attempt to obtain original file URL
-          if let targetUrl = try? await withCheckedThrowingContinuation({ (continuation: CheckedContinuation<URL, Error>)
-            in itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
-              guard let srcUrl = url else {
-                  return continuation.resume(throwing: error ?? PHPhotosError(.internalError))
-              }
-              do {
-                  let destUrl = Self.generateURL(withFileExtension: "." + srcUrl.pathExtension, isTemp: true)
-                  try FileManager.default.copyItem(at: srcUrl, to: destUrl)
-                  continuation.resume(returning: destUrl)
-              } catch {
-                  continuation.resume(throwing: error)
-              }
+
+        if let targetUrl = try? await withCheckedThrowingContinuation({(continuation: CheckedContinuation<URL, Error>) in 
+            itemProvider.loadFileRepresentation(forTypeIdentifier: UTType.image.identifier) { url, error in
+                guard let srcUrl = url else {
+                    return continuation.resume(throwing: error ?? PHPhotosError(.internalError))
+                }
+                do {
+                    let destUrl = Self.generateURL(withFileExtension: "." + srcUrl.pathExtension, isTemp: true)
+                    try FileManager.default.copyItem(at: srcUrl, to: destUrl)
+                    continuation.resume(returning: destUrl)
+                } catch {
+                    continuation.resume(throwing: error)
+                }
             }
-          }) {
+        }) {
             guard let image = UIImage(contentsOfFile: targetUrl.path) else {
                 throw PHPhotosError(.internalError)
             }
 
             return image
-          }
         }
 
         // If fast copy path failed or was not available because of the props
@@ -253,7 +251,9 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
     }
 
     private func cropImage(_ viewController: UIViewController, image: UIImage, to size: CGSize) {
-        let cropController = TOCropViewController(croppingStyle: .circular, image: image)
+        let isCropCircular = options["isCropCircular"] as? Bool == true
+
+        let cropController = TOCropViewController(croppingStyle: isCropCircular ? .circular : .default, image: image)
         cropController.aspectRatioPreset = .presetCustom
         cropController.aspectRatioLockEnabled = true
         cropController.aspectRatioPickerButtonHidden = true

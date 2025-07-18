@@ -30,6 +30,13 @@ android {
 def kotlin_version = getExtOrDefault("kotlinVersion")
 
 dependencies {
-    implementation 'com.facebook.react:react-native:+'
+    implementation "com.facebook.react:react-native:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.3"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.3"
+
+    // For PickVisualMedia contract
+    implementation "androidx.activity:activity-ktx:1.10.0"
+
+    implementation "com.github.yalantis:ucrop:2.2.8"
 }

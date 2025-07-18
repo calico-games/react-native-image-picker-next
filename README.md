@@ -2,6 +2,20 @@
 
 This package provides a React Native package for picking images from the device's gallery or camera. It supports both Android and iOS platforms.
 
+## Screenshots 📸
+
+![iOS Single Pick](https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/example.png)
+![iOS Multiple Pick](https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/ios.png)
+![iOS Crop Normal](https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/android.jpg)
+
+### Features 🚀
+
+* 🏎️ Native image picker supporting last APIs
+* 🔍 Cropping (native for iOS & custom)
+* ✅ Webp compression support
+* 📷 Camera support
+* 🆕 Support both old & new architecture
+
 ## Device Support 📱
 
 | Platform         | Supported |
@@ -113,6 +127,8 @@ export default App;
 | useWebP | bool | true | Whether to use WebP format for the image. |
 | shouldResize | bool | true | Whether to resize the image to the specified height and width. |
 | useFrontCamera | bool | true | Whether to default to the front camera when opened. Please note that not all Android devices handle this parameter |
+| useNativeCropper | bool | false | Whether to use the native cropper provided by `UIImagePickerController`. If false, it will use a custom cropper (iOS only). |
+| isCropCircular | bool | true | Whether to enable circular cropping. This will only work if `isCropping` is true. |
 | isTemp | bool | false | Whether to save the image in a temporary directory. If true, the image will be saved in the temporary directory, otherwise it will be saved in the document directory. |
 
 ## Troubleshooting 🛠
@@ -125,3 +141,15 @@ If your app crashes when trying to open the camera on iOS, ensure that you have 
 ```
 
 Note that you do not need to add the `NSPhotoLibraryUsageDescription` key to work, as it does not access the photo library directly and uses the native iOS image picker.
+
+## License 📄
+
+MIT License
+
+## Acknowledgements 🙏
+
+This projects would have been more difficult to build without the following libraries:
+
+* [https://github.com/Yalantis/uCrop](uCrop) for cropping images on Android.
+* [https://github.com/TimOliver/TOCropViewController](TOCropViewController) for cropping images on iOS.
+* [https://github.com/sdwebimage](SDWebImage) for webp compression support on iOS.

@@ -14,7 +14,8 @@ function App(): JSX.Element {
     shouldResize: true,
     useFrontCamera: true,
     useNativeCropper: false,
-    isTemp: true,
+    isCropCircular: false,
+    isTemp: false,
   };
 
   const openPicker = async () => {

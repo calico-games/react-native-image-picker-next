@@ -10,3 +10,5 @@ volumes
 node_modules
 *.xcframework
 *.so
+.gradle
+.idea

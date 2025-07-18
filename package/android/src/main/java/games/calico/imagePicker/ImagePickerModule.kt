@@ -14,6 +14,10 @@ import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.facebook.react.bridge.ActivityEventListener
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.Promise
@@ -29,6 +33,8 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.util.UUID
+import android.os.Handler
+import android.os.Looper
 
 class ImagePickerModule(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext), ActivityEventListener {
@@ -36,6 +42,7 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   companion object {
     private const val IMAGE_PICKER_REQUEST = 61110
     private const val CAMERA_CAPTURE_REQUEST = 61111
+    private const val CROP_IMAGE_REQUEST = 61112
     private const val DEFAULT_SIZE = 200.0
     private const val DEFAULT_COMPRESSION_QUALITY = 0.5
     private val DEFAULT_OPTIONS: () -> WritableMap = {
@@ -47,6 +54,7 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
         options.putBoolean("useWebP", true)
         options.putBoolean("shouldResize", true)
         options.putBoolean("useFrontCamera", true)
+        options.putBoolean("isCropCircular", true)
         options.putBoolean("isTemp", true)
         options
     }
@@ -68,10 +76,12 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   private var useWebP: Boolean = true
   private var shouldResize: Boolean = true
   private var useFrontCamera: Boolean = true
+  private var isCropCircular: Boolean = true
   private var isTemp: Boolean = true
 
   private var currentPhotoPath: String? = null
   private var imagePickerPromise: Promise? = null
+  private val cropImageContract = CropImageContract()
 
   @ReactMethod
   fun openGallery(options: ReadableMap, promise: Promise) {
@@ -100,18 +110,29 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   }
 
   private fun initiateGallery(activity: Activity) {
-    try {
-      val intent = Intent(Intent.ACTION_GET_CONTENT)
-      intent.type = "image/*"
-      intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
-      intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
-      intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
-      intent.addCategory(Intent.CATEGORY_OPENABLE)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+       val request = PickVisualMediaRequest.Builder()
+        .setMediaType(PickVisualMedia.ImageOnly)
+        .setOrderedSelection(false)
+        .setDefaultTab(ActivityResultContracts.PickVisualMedia.DefaultTab.PhotosTab)
+        .build()
 
-      val chooserIntent = Intent.createChooser(intent, "Pick an image")
-      activity.startActivityForResult(chooserIntent, IMAGE_PICKER_REQUEST)
-    } catch (e: Exception) {
-      imagePickerPromise?.reject("IMAGE_PICKER_ERROR", "Failed to show image picker: ${e.message}")
+        val intent = PickVisualMedia().createIntent(activity.applicationContext, request)
+        activity.startActivityForResult(intent, IMAGE_PICKER_REQUEST)
+    } else {
+      try {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "image/*"
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, arrayOf("image/*"))
+        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
+
+        val chooserIntent = Intent.createChooser(intent, "Pick an image")
+        activity.startActivityForResult(chooserIntent, IMAGE_PICKER_REQUEST)
+      } catch (e: Exception) {
+        imagePickerPromise?.reject("IMAGE_PICKER_ERROR", "Failed to show image picker: ${e.message}")
+      }
     }
   }
 
@@ -178,23 +199,24 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   @Throws(IOException::class)
   private fun createImageFile(createTempFile: Boolean = true): File {
     val imageFileName = "image-${UUID.randomUUID()}"
-    val appName = reactApplicationContext.applicationInfo.loadLabel(reactApplicationContext.packageManager).toString()
-    val path = File(
-      Environment.getExternalStoragePublicDirectory(
-        Environment.DIRECTORY_PICTURES
-      ), appName
-    )
-    path.run {
-      if (!exists()) {
-        mkdirs()
-      }
-    }
 
     val extension = if (useWebP) ".webp" else ".jpg"
 
     val image = if (createTempFile) {
       File.createTempFile(imageFileName, extension)
     } else {
+        val appName = reactApplicationContext.applicationInfo.loadLabel(reactApplicationContext.packageManager).toString()
+        val path = File(
+          Environment.getExternalStoragePublicDirectory(
+            Environment.DIRECTORY_PICTURES
+          ), appName
+        )
+        path.run {
+          if (!exists()) {
+            mkdirs()
+          }
+        }
+
       File(path, "$imageFileName$extension").apply {
         createNewFile()
       }
@@ -316,12 +338,15 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
                 return
               }
 
-              if (shouldResize) {
+              if (isCropping) {
+                launchCropImage(uri, bitmap, 200)
+                return // Don't clear promise yet, wait for crop result
+              } else if (shouldResize) {
                 bitmap = resizeImage(activity, uri)
-              }
 
-              val finalUri = compressImage(bitmap, useWebP)
-              imagePickerPromise?.resolve(finalUri.toString())
+                val finalUri = compressImage(bitmap, useWebP)
+                imagePickerPromise?.resolve(finalUri.toString())
+              }
             } catch (e: IOException) {
               imagePickerPromise?.reject("FILE_ACCESS_ERROR", "Failed to access image file: ${e.message}")
             } catch (e: SecurityException) {
@@ -355,12 +380,15 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
                 return
               }
 
-              if (shouldResize) {
+              if (isCropping) {
+                launchCropImage(uri, bitmap, 0)
+                return // Don't clear promise yet, wait for crop result
+              } else if (shouldResize) {
                 bitmap = resizeImage(activity, uri)
-              }
 
-              val finalUri = compressImage(bitmap, useWebP)
-              imagePickerPromise?.resolve(finalUri.toString())
+                val finalUri = compressImage(bitmap, useWebP)
+                imagePickerPromise?.resolve(finalUri.toString())
+              }
             } catch (e: IOException) {
               imagePickerPromise?.reject("FILE_ACCESS_ERROR", "Failed to access captured image: ${e.message}")
             } catch (e: SecurityException) {
@@ -375,6 +403,24 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
           imagePickerPromise?.reject("PICKER_CANCELLED_ERROR", "Image capture canceled")
         } else {
           imagePickerPromise?.reject("IMAGE_CAPTURE_ERROR", "Image capture failed")
+        }
+      }
+      CROP_IMAGE_REQUEST -> {
+        val resultIntent = data
+        val result = cropImageContract.parseResult(resultCode, resultIntent)
+        when (result) {
+          is CropImageContractResult.Success -> {
+            val bitmap = resizeImage(activity, result.uri)
+
+            val finalUri = compressImage(bitmap, useWebP)
+            imagePickerPromise?.resolve(finalUri.toString())
+          }
+          is CropImageContractResult.Cancelled -> {
+            imagePickerPromise?.reject("PICKER_CANCELLED_ERROR", "Image cropping cancelled")
+          }
+          is CropImageContractResult.Error -> {
+            imagePickerPromise?.reject("IMAGE_CROP_ERROR", "Image cropping failed", result.exception)
+          }
         }
       }
     }
@@ -467,6 +513,39 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
     return Uri.fromFile(outputFile)
   }
 
+  private fun launchCropImage(uri: Uri, bitmap: Bitmap, delayMs: Long) {
+    val extension = uri.lastPathSegment?.substringAfterLast('.') ?: "jpg"
+
+    val options = CropImageContractOptions(
+      sourceUri = uri,
+      width = width.toInt(),
+      height = height.toInt(),
+      extension = extension,
+      isCropCircular = isCropCircular
+    )
+  
+    try {
+      // Instead of using the crop launcher, directly start the crop activity
+      val activity = currentActivity
+      if (activity != null) {
+        val intent = cropImageContract.createIntent(activity, options)
+
+        if (delayMs >= 0) {
+          // Add a small delay to allow the picker to dismiss smoothly
+          Handler(Looper.getMainLooper()).postDelayed({
+            activity.startActivityForResult(intent, CROP_IMAGE_REQUEST)
+          }, delayMs)
+        } else {
+          activity.startActivityForResult(intent, CROP_IMAGE_REQUEST)
+        }
+      } else {
+        imagePickerPromise?.reject("CROP_LAUNCH_ERROR", "Activity is null")
+      }
+    } catch (e: Exception) {
+      imagePickerPromise?.reject("CROP_LAUNCH_ERROR", "Failed to launch crop activity: ${e.message}")
+    }
+  }
+
   private fun setConfiguration(options: ReadableMap) {
     isCropping = getBooleanOption(options, "isCropping")
     width = getDoubleOption(options, "width")
@@ -475,6 +554,7 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
     useWebP = getBooleanOption(options, "useWebP")
     shouldResize = getBooleanOption(options, "shouldResize")
     useFrontCamera = getBooleanOption(options, "useFrontCamera")
+    isCropCircular = getBooleanOption(options, "isCropCircular")
     isTemp = getBooleanOption(options, "isTemp")
     this.options = options
   }

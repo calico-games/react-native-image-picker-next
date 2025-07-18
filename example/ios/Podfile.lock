@@ -10,9 +10,9 @@ PODS:
   - hermes-engine/Pre-built (0.78.3)
   - ImagePicker (0.0.1):
     - React-Core
-    - SDWebImage
-    - SDWebImageWebPCoder
-    - TOCropViewController
+    - SDWebImage (~> 5.21.1)
+    - SDWebImageWebPCoder (~> 0.14.6)
+    - TOCropViewController (~> 2.7.4)
   - libwebp (1.5.0):
     - libwebp/demux (= 1.5.0)
     - libwebp/mux (= 1.5.0)
@@ -1779,7 +1779,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   hermes-engine: b5c9cfbe6415f1b0b24759f2942c8f33e9af6347
-  ImagePicker: f63120618a1e1c355b2735441b2f139fd0253805
+  ImagePicker: 7e1670200c257a88cf6e3d532e74ecffc40c23ef
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
   RCTDeprecation: cf39863b43871c2031050605fb884019b6193910
