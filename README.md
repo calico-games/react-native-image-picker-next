@@ -4,9 +4,11 @@ This package provides a React Native package for picking images from the device'
 
 ## Screenshots 📸
 
-![iOS Single Pick](https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/example.png)
-![iOS Multiple Pick](https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/ios.png)
-![iOS Crop Normal](https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/android.jpg)
+<p align="left">
+  <img width=200 title="iOS Single Pick" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/example.png">
+  <img width=200 title="iOS Multiple Pick" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/ios.png">
+  <img width=200 title="iOS Crop Normal" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/android.jpg">
+</p>
 
 ### Features 🚀
 
