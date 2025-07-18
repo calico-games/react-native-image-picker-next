@@ -29,6 +29,7 @@ And finally, add this at the end of your `ios/Podfile`:
 # Add this at the end
 pod 'SDWebImage', :modular_headers => true
 pod 'SDWebImageWebPCoder', :modular_headers => true
+pod 'TOCropViewController', :modular_headers => true
 ```
 
 ## Usage 😈
@@ -101,13 +102,13 @@ function App(): JSX.Element {
 export default App;
 ```
 
-### Options
+## Options ⚙
 
 | Property | Type | Default | Description |
 | -------- | :---: | :---: | :---------- |
 | isCropping | bool | false | Enable or disable cropping |
-| width | number | 200 | Width of result image when used with `isCropping` option |
-| height | number | 200 | Height of result image when used with `isCropping` option |
+| width | number | 200 | Width of result image when used with `shouldResize` option |
+| height | number | 200 | Height of result image when used with `shouldResize` option |
 | compressionQuality | number | 0.5 | Compress image with quality (from 0 to 1, where 1 is best quality). |
 | useWebP | bool | true | Whether to use WebP format for the image. |
 | shouldResize | bool | true | Whether to resize the image to the specified height and width. |

@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.dependency 'React-Core'
   s.dependency 'SDWebImage'
   s.dependency 'SDWebImageWebPCoder'
+  s.dependency 'TOCropViewController'
 
   s.source_files = 'ios/*.{h,m,swift}'
 

@@ -13,6 +13,7 @@ function App(): JSX.Element {
     useWebP: true,
     shouldResize: true,
     useFrontCamera: true,
+    useNativeCropper: false,
     isTemp: true,
   };
 
@@ -55,7 +56,7 @@ function App(): JSX.Element {
   };
 
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff'}}>
       {photoURL && (
         <Image
           source={{uri: photoURL}}

@@ -12,6 +12,7 @@ PODS:
     - React-Core
     - SDWebImage
     - SDWebImageWebPCoder
+    - TOCropViewController
   - libwebp (1.5.0):
     - libwebp/demux (= 1.5.0)
     - libwebp/mux (= 1.5.0)
@@ -1548,6 +1549,7 @@ PODS:
     - libwebp (~> 1.0)
     - SDWebImage/Core (~> 5.17)
   - SocketRocket (0.7.1)
+  - TOCropViewController (2.7.4)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1621,6 +1623,7 @@ DEPENDENCIES:
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - SDWebImage
   - SDWebImageWebPCoder
+  - TOCropViewController
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -1629,6 +1632,7 @@ SPEC REPOS:
     - SDWebImage
     - SDWebImageWebPCoder
     - SocketRocket
+    - TOCropViewController
 
 EXTERNAL SOURCES:
   boost:
@@ -1775,7 +1779,7 @@ SPEC CHECKSUMS:
   fmt: a40bb5bd0294ea969aaaba240a927bd33d878cdd
   glog: eb93e2f488219332457c3c4eafd2738ddc7e80b8
   hermes-engine: b5c9cfbe6415f1b0b24759f2942c8f33e9af6347
-  ImagePicker: cb1fa6bd2279bac90596bce9cf3a36ce30039940
+  ImagePicker: f63120618a1e1c355b2735441b2f139fd0253805
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   RCT-Folly: 36fe2295e44b10d831836cc0d1daec5f8abcf809
   RCTDeprecation: cf39863b43871c2031050605fb884019b6193910
@@ -1838,8 +1842,9 @@ SPEC CHECKSUMS:
   SDWebImage: f29024626962457f3470184232766516dee8dfea
   SDWebImageWebPCoder: e38c0a70396191361d60c092933e22c20d5b1380
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
+  TOCropViewController: 80b8985ad794298fb69d3341de183f33d1853654
   Yoga: eca8dd841b7cd47d82d66be58af8e3aeb819012f
 
-PODFILE CHECKSUM: ec1a798b0dd2811a2416e82d03c40ac158703e20
+PODFILE CHECKSUM: 6f5388abbb5c71c871ccb1988ac983aedff1644a
 
 COCOAPODS: 1.15.2
