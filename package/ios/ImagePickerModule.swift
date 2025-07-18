@@ -18,7 +18,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
             "useWebP": true,
             "shouldResize": true,
             "useFrontCamera": false,
-            "useNativeCropper": true,
+            "useNativeCropper": false,
             "isTemp": false
         ]
     }
@@ -43,7 +43,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
             let useFrontCamera = self.options["useFrontCamera"] as? Bool == true
             let imagePicker: UIViewController
 
-            if #available(iOS 14.0, *), sourceType != .camera {
+            if #available(iOS 14.0, *), !useNativeCropper, sourceType != .camera {
                 var configuration = PHPickerConfiguration(photoLibrary: PHPhotoLibrary.shared())
                 configuration.selectionLimit = 1
                 configuration.filter = .images
