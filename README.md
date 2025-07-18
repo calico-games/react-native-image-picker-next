@@ -66,6 +66,8 @@ function App(): JSX.Element {
     useWebP: true,
     shouldResize: true,
     useFrontCamera: true,
+    useNativeCropper: false,
+    isCropCircular: false,
     isTemp: true,
   };
 
