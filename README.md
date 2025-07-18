@@ -5,9 +5,10 @@ This package provides a React Native package for picking images from the device'
 ## Screenshots 📸
 
 <p align="left">
-  <img width=200 title="iOS Single Pick" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/example.png">
-  <img width=200 title="iOS Multiple Pick" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/ios.png">
-  <img width=200 title="iOS Crop Normal" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/android.jpg">
+  <img width=200 title="Example" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/example.png">
+  <img width=200 title="iOS" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/ios.png">
+  <img width=200 title="Android" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/android.jpg">
+  <img width=200 title="Circular Crop" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/circular.jpg">
 </p>
 
 ### Features 🚀
@@ -152,6 +153,6 @@ MIT License
 
 This projects would have been more difficult to build without the following libraries:
 
-* [https://github.com/Yalantis/uCrop](uCrop) for cropping images on Android.
-* [https://github.com/TimOliver/TOCropViewController](TOCropViewController) for cropping images on iOS.
-* [https://github.com/sdwebimage](SDWebImage) for webp compression support on iOS.
+* [uCrop](https://github.com/Yalantis/uCrop) for cropping images on Android.
+* [TOCropViewController](https://github.com/TimOliver/TOCropViewController) for cropping images on iOS.
+* [SDWebImage](https://github.com/sdwebimage) for Webp compression support on iOS.

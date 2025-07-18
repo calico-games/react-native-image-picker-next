@@ -14,7 +14,7 @@ function App(): JSX.Element {
     shouldResize: true,
     useFrontCamera: true,
     useNativeCropper: false,
-    isCropCircular: false,
+    isCropCircular: true,
     isTemp: false,
   };
 
