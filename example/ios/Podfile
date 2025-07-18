@@ -55,7 +55,6 @@ target 'example' do
   end
   
   # Add this
-  pod 'SDWebImage', :modular_headers => true
-  pod 'SDWebImageWebPCoder', :modular_headers => true
+  pod 'libwebp', :modular_headers => true
   pod 'TOCropViewController', :modular_headers => true
 end

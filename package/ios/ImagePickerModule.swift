@@ -1,9 +1,8 @@
 import UIKit
 import PhotosUI
 import React
-import SDWebImage
-import SDWebImageWebPCoder
 import TOCropViewController
+import libwebp
 
 @objc(ImagePickerModule)
 class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDelegate, UINavigationControllerDelegate, PHPickerViewControllerDelegate {
@@ -289,8 +288,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
 
         let imageData: Data
         if useWebP {
-            let options: [SDImageCoderOption: Any] = [.encodeCompressionQuality: compressionQuality, .encodeWebPMethod: 0, .encodeWebPAlphaCompression: 1]
-            imageData = SDImageWebPCoder.shared.encodedData(with: image, format: .webP, options: options)!
+            imageData = encodeWebP(image: image, quality: compressionQuality) ?? Data()
         } else {
             imageData = image.jpegData(compressionQuality: CGFloat(compressionQuality))!
         }
@@ -321,6 +319,53 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
         let randomID = UUID().uuidString
         let imageFileName = "image-" + randomID
         return directory.appendingPathComponent(imageFileName + withFileExtension)
+    }
+    
+    private func encodeWebP(image: UIImage, quality: Float) -> Data? {
+        guard let cgImage = image.cgImage else { return nil }
+        
+        let width = Int32(cgImage.width)
+        let height = Int32(cgImage.height)
+        
+        // Get raw pixel data from the image in RGBA format (matching SDWebImageWebPCoder's MODE_rgbA)
+        guard let context = CGContext(
+            data: nil,
+            width: Int(width),
+            height: Int(height),
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceRGB(),
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue // RGBA premultiplied
+        ) else { return nil }
+        
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: CGFloat(width), height: CGFloat(height)))
+        
+        guard let pixelData = context.data else { return nil }
+        
+        // Configure WebP encoding
+        var output: UnsafeMutablePointer<UInt8>? = nil
+        let stride = Int32(context.bytesPerRow)
+        let qualityInt = Float(quality * 100) // Convert 0-1 to 0-100
+        
+        // Encode to WebP using RGBA (matching SDWebImageWebPCoder's behavior)
+        let size = WebPEncodeRGBA(
+            pixelData.bindMemory(to: UInt8.self, capacity: Int(height) * Int(stride)),
+            width,
+            height,
+            stride,
+            qualityInt,
+            &output
+        )
+        
+        guard size > 0, let output = output else { return nil }
+        
+        // Create Data from the output
+        let data = Data(bytes: output, count: Int(size))
+        
+        // Free the WebP allocated memory
+        WebPFree(output)
+        
+        return data
     }
 }
 

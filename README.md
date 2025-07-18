@@ -15,7 +15,7 @@ This package provides a React Native package for picking images from the device'
 
 * 🏎️ Native image picker supporting last APIs
 * 🔍 Cropping (native for iOS & custom)
-* ✅ Webp compression support
+* ✅ WebP compression support
 * 📷 Camera support
 * 🆕 Support both old & new architecture
 
@@ -44,8 +44,7 @@ And finally, add this at the end of your `ios/Podfile`:
 
 ```ruby
 # Add this at the end
-pod 'SDWebImage', :modular_headers => true
-pod 'SDWebImageWebPCoder', :modular_headers => true
+pod 'libwebp', :modular_headers => true
 pod 'TOCropViewController', :modular_headers => true
 ```
 
@@ -155,4 +154,4 @@ This projects would have been more difficult to build without the following libr
 
 * [uCrop](https://github.com/Yalantis/uCrop) for cropping images on Android.
 * [TOCropViewController](https://github.com/TimOliver/TOCropViewController) for cropping images on iOS.
-* [SDWebImage](https://github.com/sdwebimage) for Webp compression support on iOS.
+* [SDWebImage & libWebP](https://github.com/SDWebImage/libwebp-Xcode) for WebP compression support on iOS.

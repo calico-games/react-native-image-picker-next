@@ -15,8 +15,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.dependency 'React-Core'
-  s.dependency 'SDWebImage', '~> 5.21.1'
-  s.dependency 'SDWebImageWebPCoder', '~> 0.14.6'
+  s.dependency 'libwebp', '~> 1.5.0'
   s.dependency 'TOCropViewController', '~> 2.7.4'
 
   s.source_files = 'ios/*.{h,m,swift}'
