@@ -12,3 +12,5 @@ node_modules
 *.so
 .gradle
 .idea
+.kotlin
+.settings

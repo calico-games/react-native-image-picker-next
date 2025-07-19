@@ -11,7 +11,7 @@ This package provides a React Native package for picking images from the device'
   <img width=200 title="Circular Crop" src="https://github.com/calico-games/react-native-image-picker-next/blob/main/screenshots/circular.jpg">
 </p>
 
-### Features 🚀
+## Features 🚀
 
 * 🏎️ Native image picker supporting last APIs
 * 🔍 Cropping (native for iOS & custom)
