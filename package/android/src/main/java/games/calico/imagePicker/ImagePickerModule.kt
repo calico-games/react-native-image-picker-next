@@ -85,7 +85,7 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun openGallery(options: ReadableMap, promise: Promise) {
-    val activity = currentActivity
+    val activity = reactApplicationContext.currentActivity
     if (activity == null) {
       promise.reject("ACTIVITY_NULL", "Activity is null")
       return
@@ -138,7 +138,7 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun openCamera(options: ReadableMap, promise: Promise) {
-    val activity = currentActivity
+    val activity = reactApplicationContext.currentActivity
     if (activity == null) {
       promise.reject("ACTIVITY_NULL", "Activity is null")
       return
@@ -526,7 +526,7 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   
     try {
       // Instead of using the crop launcher, directly start the crop activity
-      val activity = currentActivity
+      val activity = reactApplicationContext.currentActivity
       if (activity != null) {
         val intent = cropImageContract.createIntent(activity, options)
 
