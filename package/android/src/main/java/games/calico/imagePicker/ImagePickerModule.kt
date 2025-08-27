@@ -93,18 +93,20 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
 
     setConfiguration(options)
     this.imagePickerPromise = promise
-
-    val permissions = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-      listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    
+    // Only need WRITE_EXTERNAL_STORAGE for API 29 and below
+    // API 30+ uses scoped storage, and the system picker handles permissions
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+      val permissions = listOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+      permissionsCheck(
+        activity, 
+        promise,
+        permissions
+      ) {
+        initiateGallery(activity)
+      }
     } else {
-      listOf(Manifest.permission.READ_MEDIA_IMAGES)
-    }
-
-    permissionsCheck(
-      activity, 
-      promise,
-      permissions
-    ) {
+      // No permissions needed for API 30+ with ACTION_GET_CONTENT or PickVisualMedia
       initiateGallery(activity)
     }
   }
@@ -152,10 +154,16 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
     setConfiguration(options)
     this.imagePickerPromise = promise
 
+    val permissions = if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+      listOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    } else {
+      listOf(Manifest.permission.CAMERA)
+    }
+    
     permissionsCheck(
       activity, 
       promise, 
-      listOf(Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+      permissions
     ) {
       initiateCamera(activity)
     }

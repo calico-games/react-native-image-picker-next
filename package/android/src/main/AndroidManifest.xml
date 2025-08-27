@@ -10,9 +10,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Required for picking images from camera roll -->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <!-- Only needed for API 29 and below when saving camera images -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="29" />
 
     <!-- Required for picking images from camera directly -->
     <uses-permission android:name="android.permission.CAMERA" />
