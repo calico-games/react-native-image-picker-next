@@ -85,6 +85,11 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun openGallery(options: ReadableMap, promise: Promise) {
+    if (imagePickerPromise != null) {
+      promise.reject("PICKER_BUSY", "Image picker is already in use")
+      return
+    }
+
     val activity = reactApplicationContext.currentActivity
     if (activity == null) {
       promise.reject("ACTIVITY_NULL", "Activity is null")
@@ -140,6 +145,11 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
 
   @ReactMethod
   fun openCamera(options: ReadableMap, promise: Promise) {
+    if (imagePickerPromise != null) {
+      promise.reject("PICKER_BUSY", "Image picker is already in use")
+      return
+    }
+
     val activity = reactApplicationContext.currentActivity
     if (activity == null) {
       promise.reject("ACTIVITY_NULL", "Activity is null")
@@ -194,11 +204,13 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
         intent.putExtra("android.intent.extra.USE_FRONT_CAMERA", false)
       }
 
-      activity.startActivityForResult(intent, CAMERA_CAPTURE_REQUEST)
-
       if (intent.resolveActivity(activity.packageManager) == null) {
         imagePickerPromise?.reject("CAMERA_INTENT_ERROR", "Failed to create camera intent")
+        imagePickerPromise = null
+        return
       }
+
+      activity.startActivityForResult(intent, CAMERA_CAPTURE_REQUEST)
     } catch (e: Exception) {
       imagePickerPromise?.reject("IMAGE_FILE_ERROR", "Failed to create image file: ${e.message}")
     }
@@ -375,7 +387,12 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
             imagePickerPromise?.reject("FILE_NOT_FOUND", "Photo path is null")
             return
           }
-          val resultUri = Uri.fromFile(File(photoPath))
+          val photoFile = File(photoPath)
+          val resultUri = FileProvider.getUriForFile(
+            activity,
+            "${activity.packageName}.fileprovider",
+            photoFile
+          )
           resultUri?.let { uri ->
             try {
               val inputStream = activity.contentResolver.openInputStream(uri)
@@ -398,6 +415,10 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
               } else if (shouldResize) {
                 bitmap = resizeImage(activity, uri)
 
+                val finalUri = compressImage(bitmap, useWebP)
+                imagePickerPromise?.resolve(finalUri.toString())
+              } else {
+                // No cropping or resizing, just compress and return
                 val finalUri = compressImage(bitmap, useWebP)
                 imagePickerPromise?.resolve(finalUri.toString())
               }
@@ -441,20 +462,17 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
   }
 
   private fun resizeImage(activity: Activity, imageUri: Uri): Bitmap {
-    val inputStream: InputStream? = activity.contentResolver.openInputStream(imageUri)
-    val exif = inputStream?.let { ExifInterface(it) }
-    inputStream?.close()
+    val orientation = activity.contentResolver.openInputStream(imageUri)?.use { inputStream ->
+      ExifInterface(inputStream).getAttributeInt(
+        ExifInterface.TAG_ORIENTATION,
+        ExifInterface.ORIENTATION_UNDEFINED
+      )
+    } ?: ExifInterface.ORIENTATION_UNDEFINED
 
-    val orientation = exif?.getAttributeInt(
-      ExifInterface.TAG_ORIENTATION,
-      ExifInterface.ORIENTATION_UNDEFINED
-    )
+    val bitmap = activity.contentResolver.openInputStream(imageUri)?.use { bitmapStream ->
+      BitmapFactory.decodeStream(bitmapStream)
+    } ?: throw IOException("Unable to open or decode image for resizing")
 
-    val bitmapStream = activity.contentResolver.openInputStream(imageUri)
-      ?: throw IOException("Unable to open image for resizing")
-    val bitmap = BitmapFactory.decodeStream(bitmapStream)
-      ?: throw IOException("Failed to decode bitmap for resizing")
-    bitmapStream.close()
     val rotatedBitmap = when (orientation) {
       ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitmap, 90f)
       ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitmap, 180f)
@@ -488,15 +506,17 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
       cropY = (scaledHeight - targetHeight) / 2
     }
 
-    println("Cropping image to $targetWidth x $targetHeight")
-
     return Bitmap.createBitmap(scaledBitmap, cropX, cropY, targetWidth, targetHeight)
   }
 
   private fun rotateImage(bitmap: Bitmap, degree: Float): Bitmap {
     val matrix = Matrix()
     matrix.postRotate(degree)
-    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    val rotated = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    if (rotated != bitmap) {
+      bitmap.recycle()
+    }
+    return rotated
   }
 
   private fun flipImage(bitmap: Bitmap, horizontal: Boolean, vertical: Boolean): Bitmap {
@@ -505,7 +525,11 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
       if (horizontal) -1f else 1f,
       if (vertical) -1f else 1f
     )
-    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    val flipped = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    if (flipped != bitmap) {
+      bitmap.recycle()
+    }
+    return flipped
   }
 
   private fun compressImage(bitmap: Bitmap, useWebP: Boolean): Uri {

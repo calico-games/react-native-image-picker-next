@@ -276,7 +276,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
         var image = image.fixOrientation() ?? image
 
         let width = options["width"] as? CGFloat ?? Constants.defaultSize
-        let height = options["width"] as? CGFloat ?? Constants.defaultSize
+        let height = options["height"] as? CGFloat ?? Constants.defaultSize
         let compressionQuality = options["compressionQuality"] as? Float ?? Constants.defaultCompressionQuality
         let useWebP = options["useWebP"] as? Bool == true
         let shouldResize = options["shouldResize"] as? Bool == true
@@ -290,7 +290,7 @@ class ImagePickerModule: NSObject, RCTBridgeModule, UIImagePickerControllerDeleg
         if useWebP {
             imageData = encodeWebP(image: image, quality: compressionQuality) ?? Data()
         } else {
-            imageData = image.jpegData(compressionQuality: CGFloat(compressionQuality))!
+            imageData = image.jpegData(compressionQuality: CGFloat(compressionQuality)) ?? Data()
         }
 
         let imageExtension = useWebP ? ".webp" : ".jpg"

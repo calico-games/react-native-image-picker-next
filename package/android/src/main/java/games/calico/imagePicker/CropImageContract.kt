@@ -13,8 +13,10 @@ import java.io.Serializable
 internal class CropImageContract : ActivityResultContract<CropImageContractOptions, CropImageContractResult>() {
     override fun createIntent(context: Context, input: CropImageContractOptions): Intent {
         val outputFile = File(context.cacheDir, "cropped_image_${System.currentTimeMillis()}.${input.extension}")
-        if (!outputFile.parentFile?.exists()!!) {
-            outputFile.parentFile?.mkdirs()
+        outputFile.parentFile?.let { parent ->
+            if (!parent.exists()) {
+                parent.mkdirs()
+            }
         }
         val outputUri = Uri.fromFile(outputFile)
         
