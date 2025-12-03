@@ -5,14 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import androidx.activity.result.contract.ActivityResultContract
-import androidx.core.net.toFile
-import androidx.core.net.toUri
-import androidx.core.os.bundleOf
 import com.yalantis.ucrop.UCrop
-import com.yalantis.ucrop.UCropActivity
-import com.facebook.react.bridge.ReadableMap
 import java.io.File
 import java.io.Serializable
 
@@ -49,9 +43,11 @@ internal class CropImageContract : ActivityResultContract<CropImageContractOptio
         }
         
         uCrop.withOptions(options)
-        
-        // Use UCropActivity directly
-        return uCrop.getIntent(context)
+
+        // Get intent and override activity class to use custom ImagePickerCropActivity for safe area handling
+        val intent = uCrop.getIntent(context)
+        intent.setClass(context, ImagePickerCropActivity::class.java)
+        return intent
     }
     
     override fun parseResult(resultCode: Int, intent: Intent?): CropImageContractResult {

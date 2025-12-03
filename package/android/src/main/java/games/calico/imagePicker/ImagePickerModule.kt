@@ -371,7 +371,11 @@ class ImagePickerModule(reactContext: ReactApplicationContext) :
       }
       CAMERA_CAPTURE_REQUEST -> {
         if (resultCode == Activity.RESULT_OK) {
-          val resultUri = Uri.fromFile(File(currentPhotoPath))
+          val photoPath = currentPhotoPath ?: run {
+            imagePickerPromise?.reject("FILE_NOT_FOUND", "Photo path is null")
+            return
+          }
+          val resultUri = Uri.fromFile(File(photoPath))
           resultUri?.let { uri ->
             try {
               val inputStream = activity.contentResolver.openInputStream(uri)
